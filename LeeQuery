@@ -1,0 +1,179 @@
+-- MySQL Workbench Forward Engineering
+-- -----------------------------------------------------
+-- Schema hydra
+-- -----------------------------------------------------
+CREATE SCHEMA hydra;
+USE hydra ;
+
+-- Table `hydra`.`hydra_coach`
+CREATE TABLE hydra_coach (
+  coach_id VARCHAR(20) NOT NULL,
+  nama VARCHAR(50) NOT NULL,
+  team VARCHAR(45) NULL,
+  rating VARCHAR(10) NOT NULL,
+  PRIMARY KEY (coach_id));
+
+
+-- Table `hydra`.`hydra_course`
+CREATE TABLE hydra_course (
+  course_id VARCHAR(20) NOT NULL,
+  video VARCHAR(200) NOT NULL,
+  coach_id VARCHAR(20) NOT NULL,
+  PRIMARY KEY (course_id),
+  FOREIGN KEY (coach_id) REFERENCES hydra_coach(coach_id));
+
+
+-- Table `hydra`.`login`
+CREATE TABLE login (
+  login_id VARCHAR(20) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  passwordd VARCHAR(18) NOT NULL,
+  PRIMARY KEY (login_id));
+
+
+-- Table `hydra`.`payment_method`
+CREATE TABLE payment_method (
+  pm_id VARCHAR(20) NOT NULL,
+  type_payment VARCHAR(45) NOT NULL,
+  PRIMARY KEY (pm_id));
+
+
+-- Table `hydra`.`payment`
+CREATE TABLE payment (
+  payment_id VARCHAR(20) NOT NULL,
+  payment_date DATE NOT NULL,
+  pm_id VARCHAR(20) NOT NULL,
+  PRIMARY KEY (payment_id),
+  foreign key (pm_id) references payment_method(pm_id));
+
+
+-- Table `hydra`.`profile`
+CREATE TABLE hydra_profile (
+  account_id VARCHAR(16) NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  membership VARCHAR(32) NOT NULL,
+  login_id VARCHAR(20) NOT NULL,
+  payment_id VARCHAR(20) NOT NULL,
+  pm_id VARCHAR(20) NOT NULL,
+  primary key (account_id),
+  foreign key (login_id) references login(login_id),
+  foreign key (payment_id) references payment(payment_id),
+  foreign key (pm_id) references payment_method(pm_id));
+
+
+-- Table `hydra`.`stats`
+CREATE TABLE stats (
+  stats_id VARCHAR(16) NOT NULL,
+  ranked VARCHAR(50) NOT NULL,
+  levels INT NOT NULL,
+  gameplay_stats VARCHAR(500) NOT NULL,
+  PRIMARY KEY (stats_id));
+
+
+-- Table `hydra`.`tracker`
+CREATE TABLE tracker (
+  tracker_id VARCHAR(16) NOT NULL,
+  username_game VARCHAR(18) NOT NULL,
+  stats_id VARCHAR(16) NOT NULL,
+  PRIMARY KEY (tracker_id),
+  foreign key (stats_id) references stats(stats_id));
+  
+
+-- Table `hydra`.`news`
+CREATE TABLE news (
+  news_id VARCHAR(20) NOT NULL,
+  berita VARCHAR(45) NOT NULL,
+  PRIMARY KEY (news_id));
+
+
+-- Table `hydra`.`video_free`
+CREATE TABLE video_free (
+  videof_id VARCHAR(20) NOT NULL,
+  videos VARCHAR(50) NOT NULL,
+  PRIMARY KEY (videof_id));
+
+
+-- Table `hydra`.`home`
+CREATE TABLE home (
+  home_id VARCHAR(20) NOT NULL,
+  course_id VARCHAR(20) NOT NULL,
+  account_id VARCHAR(16) NOT NULL,
+  tracker_id VARCHAR(16) NOT NULL,
+  news_id VARCHAR(20) NOT NULL,
+  videof_id VARCHAR(20) NOT NULL,
+  primary key (home_id),
+  foreign key (course_id) references hydra_course(course_id),
+  foreign key (account_id) references hydra_profile(account_id),
+  foreign key (tracker_id) references tracker(tracker_id),
+  foreign key (news_id) references news(news_id),
+  foreign key (videof_id) references video_free(videof_id));
+  
+
+-- ------- Query --------- --
+insert into login (login_id, email, passwordd) values
+	('101', 'user1@example.com', 'password1'),
+    ('102', 'user2@example.com', 'password2'),
+    ('103', 'user3@example.com', 'password3');
+
+insert into payment_method (pm_id, type_payment) values
+	('pm101', 'Virtual Bank'),
+    ('pm102', 'GoPAY'),
+    ('pm103', 'OVO');
+    
+insert into news (news_id, berita) values
+	('nw01', 'Updated patch 6.1.2'),
+    ('nw02', 'Updated patch 6.1.3'),
+    ('nw03', 'Updated patch 6.2.0');
+    
+insert into video_free (videof_id, videos) values
+	('vf01', 'how to clutch'),
+    ('vf02', 'how to defend site'),
+    ('vf03', 'how to play with calm');
+    
+insert into hydra_coach (coach_id, nama, team, rating) values
+	('c001', 'Adrian', 'Navi','4.5 Stars'),
+    ('c002', 'Ben', 'Sentinel','5 Stars'),
+    ('c003', 'Charles', 'PRX',  '4 Stars');
+
+insert into payment (payment_id, payment_date, pm_id) values
+	('p01y', '2023-2-1', 'pm101'),
+    ('p02y', '2023-2-3', 'pm102'),
+    ('p03y', '2023-2-5', 'pm103');
+    
+insert into stats (stats_id, ranked, levels, gameplay_stats) values
+	('st01s', 'Diamond', 100, 'KDA : 1.2'),
+    ('st02s', 'Gold', 60, 'KDA : 0.9'),
+    ('st03s', 'Silver', 30, 'KDA : 1.0');
+    
+insert into hydra_profile (account_id, username, membership, login_id, payment_id, pm_id) values
+	('acc01', 'Angly', '1 month', '101', 'p01y', 'pm101'),
+    ('acc02', 'Hadid', '1 month', '102', 'p02y', 'pm102'),
+    ('acc03', 'Dafa', '3 month', '103', 'p03y', 'pm103');
+
+insert into tracker (tracker_id, username_game, stats_id) values
+	('t001', 'ChuloPapi', 'st01s'),
+    ('t002', 'Disaster', 'st02s'),
+    ('t003', 'NotInDream', 'st03s');
+
+insert into hydra_course (course_id, video, coach_id) values
+	('cr01', 'First Method', 'c001'),
+    ('cr02', 'Second Method', 'c002'),
+    ('cr03', 'Last Method', 'c003');
+    
+insert into home(home_id, course_id, account_id, tracker_id, news_id, videof_id) values
+	('hm0001', 'cr01', 'acc01', 't001', 'nw01', 'vf01'),
+    ('hm0002', 'cr02', 'acc02', 't002', 'nw02', 'vf02'),
+    ('hm0003', 'cr03', 'acc03', 't003', 'nw03', 'vf03');
+
+-- ----Table Query----- --
+select *from login;
+select *from payment_method;
+select *from news;
+select *from video_free;
+select *from hydra_coach;
+select *from payment;
+select *from stats;
+select *from hydra_profile;
+select *from tracker;
+select *from hydra_course;
+select *from home;
